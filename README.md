@@ -1,4 +1,4 @@
 setop
-=====
+===
 
-The set operations extracted from https://github.com/zond/god
+A bunch of functionality that does set operations on sorted and skippable sets.
