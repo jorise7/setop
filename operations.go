@@ -208,7 +208,6 @@ func (self *interOp) Skip(min []byte, inc bool) (result *SetOpResult, err error)
 	var maxKey []byte
 	var res *SetOpResult
 	var cmp int
-
 	for result == nil {
 		maxKey = nil
 		for index, thisSkipper := range self.skippers {
@@ -228,7 +227,7 @@ func (self *interOp) Skip(min []byte, inc bool) (result *SetOpResult, err error)
 						maxKey = res.Key
 					}
 					result = nil
-				} else {
+				} else if result != nil {
 					result.Values = self.merger(result.Values, res.Values, self.weights[index])
 				}
 			}

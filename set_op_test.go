@@ -48,6 +48,24 @@ var testSets = map[string]*testSkipper{
 			tP{"d", "d"},
 		},
 	},
+	"c": &testSkipper{
+		pairs: []tP{
+			tP{"a", "a"},
+			tP{"b", "b"},
+			tP{"c", "c"},
+		},
+	},
+	"d": &testSkipper{
+		pairs: []tP{
+			tP{"c", "c"},
+		},
+	},
+	"e": &testSkipper{
+		pairs: []tP{
+			tP{"c", "c"},
+			tP{"d", "d"},
+		},
+	},
 }
 
 func resetSets() {
@@ -526,10 +544,19 @@ func TestUnion(t *testing.T) {
 	}
 }
 
-func TestInter(t *testing.T) {
+func TestInter1(t *testing.T) {
 	resetSets()
 	found := collect(t, "(I a b)")
 	expected := inter(_append, [][]tP{testSets["a"].pairs, testSets["b"].pairs}, []float64{1, 1})
+	if !reflect.DeepEqual(found, expected) {
+		t.Errorf("%v should be %v", found, expected)
+	}
+}
+
+func TestInter2(t *testing.T) {
+	resetSets()
+	found := collect(t, "(I c d e)")
+	expected := inter(_append, [][]tP{testSets["c"].pairs, testSets["d"].pairs, testSets["e"].pairs}, []float64{1, 1, 1})
 	if !reflect.DeepEqual(found, expected) {
 		t.Errorf("%v should be %v", found, expected)
 	}
