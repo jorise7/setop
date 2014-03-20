@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/zond/god/common"
 	"math/big"
 )
 
@@ -87,12 +86,12 @@ func integerSum(oldValues [][]byte, newValues [][]byte, w float64) (result [][]b
 	var tmp int64
 	var err error
 	for _, b := range oldValues {
-		if tmp, err = common.DecodeInt64(b); err == nil {
+		if tmp, err = DecodeInt64(b); err == nil {
 			sum += tmp
 		}
 	}
 	for _, b := range newValues {
-		if tmp, err = common.DecodeInt64(b); err == nil {
+		if tmp, err = DecodeInt64(b); err == nil {
 			sum += (tmp * int64(w))
 		}
 	}
@@ -105,20 +104,20 @@ func integerDiv(oldValues [][]byte, newValues [][]byte, w float64) (result [][]b
 	var tmp int64
 	var err error
 	if oldValues != nil {
-		if tmp, err = common.DecodeInt64(oldValues[0]); err == nil {
+		if tmp, err = DecodeInt64(oldValues[0]); err == nil {
 			sum = tmp
 		}
 		for _, b := range newValues {
-			if tmp, err = common.DecodeInt64(b); err == nil {
+			if tmp, err = DecodeInt64(b); err == nil {
 				sum /= (tmp * int64(w))
 			}
 		}
 	} else {
-		if tmp, err = common.DecodeInt64(newValues[0]); err == nil {
+		if tmp, err = DecodeInt64(newValues[0]); err == nil {
 			sum = (tmp * int64(w))
 		}
 		for _, b := range newValues[1:] {
-			if tmp, err = common.DecodeInt64(b); err == nil {
+			if tmp, err = DecodeInt64(b); err == nil {
 				sum /= (tmp * int64(w))
 			}
 		}
@@ -132,12 +131,12 @@ func integerMul(oldValues [][]byte, newValues [][]byte, w float64) (result [][]b
 	var tmp int64
 	var err error
 	for _, b := range oldValues {
-		if tmp, err = common.DecodeInt64(b); err == nil {
+		if tmp, err = DecodeInt64(b); err == nil {
 			sum *= tmp
 		}
 	}
 	for _, b := range newValues {
-		if tmp, err = common.DecodeInt64(b); err == nil {
+		if tmp, err = DecodeInt64(b); err == nil {
 			sum *= (tmp * int64(w))
 		}
 	}
@@ -150,12 +149,12 @@ func floatSum(oldValues [][]byte, newValues [][]byte, w float64) (result [][]byt
 	var tmp float64
 	var err error
 	for _, b := range oldValues {
-		if tmp, err = common.DecodeFloat64(b); err == nil {
+		if tmp, err = DecodeFloat64(b); err == nil {
 			sum += tmp
 		}
 	}
 	for _, b := range newValues {
-		if tmp, err = common.DecodeFloat64(b); err == nil {
+		if tmp, err = DecodeFloat64(b); err == nil {
 			sum += (tmp * w)
 		}
 	}
@@ -168,20 +167,20 @@ func floatDiv(oldValues [][]byte, newValues [][]byte, w float64) (result [][]byt
 	var tmp float64
 	var err error
 	if oldValues != nil {
-		if tmp, err = common.DecodeFloat64(oldValues[0]); err == nil {
+		if tmp, err = DecodeFloat64(oldValues[0]); err == nil {
 			sum = tmp
 		}
 		for _, b := range newValues {
-			if tmp, err = common.DecodeFloat64(b); err == nil {
+			if tmp, err = DecodeFloat64(b); err == nil {
 				sum /= (tmp * w)
 			}
 		}
 	} else {
-		if tmp, err = common.DecodeFloat64(newValues[0]); err == nil {
+		if tmp, err = DecodeFloat64(newValues[0]); err == nil {
 			sum = (tmp * w)
 		}
 		for _, b := range newValues[1:] {
-			if tmp, err = common.DecodeFloat64(b); err == nil {
+			if tmp, err = DecodeFloat64(b); err == nil {
 				sum /= (tmp * w)
 			}
 		}
@@ -195,12 +194,12 @@ func floatMul(oldValues [][]byte, newValues [][]byte, w float64) (result [][]byt
 	var tmp float64
 	var err error
 	for _, b := range oldValues {
-		if tmp, err = common.DecodeFloat64(b); err == nil {
+		if tmp, err = DecodeFloat64(b); err == nil {
 			sum *= tmp
 		}
 	}
 	for _, b := range newValues {
-		if tmp, err = common.DecodeFloat64(b); err == nil {
+		if tmp, err = DecodeFloat64(b); err == nil {
 			sum *= (tmp * w)
 		}
 	}
@@ -213,12 +212,12 @@ func bigIntAnd(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.And(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.And(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.And(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.And(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
@@ -226,10 +225,10 @@ func bigIntAnd(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 func bigIntAdd(oldValues [][]byte, newValues [][]byte, w float64) (result [][]byte) {
 	sum := new(big.Int)
 	for _, b := range oldValues {
-		sum.Add(sum, common.DecodeBigInt(b))
+		sum.Add(sum, DecodeBigInt(b))
 	}
 	for _, b := range newValues {
-		sum.Add(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+		sum.Add(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 	}
 	return [][]byte{sum.Bytes()}
 }
@@ -238,12 +237,12 @@ func bigIntAndNot(oldValues [][]byte, newValues [][]byte, w float64) (result [][
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.AndNot(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.AndNot(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.AndNot(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.AndNot(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
@@ -253,12 +252,12 @@ func bigIntDiv(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.Div(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Div(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.Div(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Div(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
@@ -268,12 +267,12 @@ func bigIntMod(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.Mod(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Mod(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.Mod(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Mod(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
@@ -281,10 +280,10 @@ func bigIntMod(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 func bigIntMul(oldValues [][]byte, newValues [][]byte, w float64) (result [][]byte) {
 	sum := big.NewInt(1)
 	for _, b := range oldValues {
-		sum.Mul(sum, common.DecodeBigInt(b))
+		sum.Mul(sum, DecodeBigInt(b))
 	}
 	for _, b := range newValues {
-		sum.Mul(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+		sum.Mul(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 	}
 	return [][]byte{sum.Bytes()}
 }
@@ -293,12 +292,12 @@ func bigIntOr(oldValues [][]byte, newValues [][]byte, w float64) (result [][]byt
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.Or(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Or(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.Or(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Or(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
@@ -308,12 +307,12 @@ func bigIntRem(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.Rem(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Rem(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.Rem(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Rem(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
@@ -323,12 +322,12 @@ func bigIntXor(oldValues [][]byte, newValues [][]byte, w float64) (result [][]by
 	if oldValues != nil {
 		sum = new(big.Int).SetBytes(oldValues[0])
 		for _, b := range newValues {
-			sum.Xor(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Xor(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	} else {
 		sum = new(big.Int).Mul(new(big.Int).SetBytes(newValues[0]), big.NewInt(int64(w)))
 		for _, b := range newValues[1:] {
-			sum.Xor(sum, new(big.Int).Mul(common.DecodeBigInt(b), big.NewInt(int64(w))))
+			sum.Xor(sum, new(big.Int).Mul(DecodeBigInt(b), big.NewInt(int64(w))))
 		}
 	}
 	return [][]byte{sum.Bytes()}
