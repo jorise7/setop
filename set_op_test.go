@@ -73,12 +73,12 @@ func resetSets() {
 	}
 }
 
-func findTestSet(b []byte) Skipper {
+func findTestSet(b []byte) (Skipper, error) {
 	set, ok := testSets[string(b)]
 	if !ok {
 		panic(fmt.Errorf("couldn't find test set %s", string(b)))
 	}
-	return set
+	return set, nil
 }
 
 func collect(t *testing.T, expr string) []*SetOpResult {

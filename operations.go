@@ -11,14 +11,18 @@ type Skipper interface {
 	Skip(min []byte, inc bool) (result *SetOpResult, err error)
 }
 
-func createSkippersAndWeights(r RawSourceCreator, sources []SetOpSource) (skippers []Skipper, weights []float64) {
+func createSkippersAndWeights(r RawSourceCreator, sources []SetOpSource) (skippers []Skipper, weights []float64, err error) {
 	skippers = make([]Skipper, len(sources))
 	weights = make([]float64, len(sources))
 	for index, source := range sources {
 		if source.Key != nil {
-			skippers[index] = r(source.Key)
+			if skippers[index], err = r(source.Key); err != nil {
+				return
+			}
 		} else {
-			skippers[index] = createSkipper(r, source.SetOp)
+			if skippers[index], err = createSkipper(r, source.SetOp); err != nil {
+				return
+			}
 		}
 		if source.Weight != nil {
 			weights[index] = *source.Weight
@@ -29,8 +33,11 @@ func createSkippersAndWeights(r RawSourceCreator, sources []SetOpSource) (skippe
 	return
 }
 
-func createSkipper(r RawSourceCreator, op *SetOp) (result Skipper) {
-	skippers, weights := createSkippersAndWeights(r, op.Sources)
+func createSkipper(r RawSourceCreator, op *SetOp) (result Skipper, err error) {
+	skippers, weights, err := createSkippersAndWeights(r, op.Sources)
+	if err != nil {
+		return
+	}
 	switch op.Type {
 	case Union:
 		result = &unionOp{
@@ -57,7 +64,8 @@ func createSkipper(r RawSourceCreator, op *SetOp) (result Skipper) {
 			merger:   getMerger(op.Merge),
 		}
 	default:
-		panic(fmt.Errorf("Unknown SetOp Type %v", op.Type))
+		err = fmt.Errorf("Unknown SetOp Type %v", op.Type)
+		return
 	}
 	return
 }

@@ -7,7 +7,7 @@ import (
 )
 
 // RawSourceCreator is a function that takes the name of a raw skippable sortable set, and returns a Skipper interface.
-type RawSourceCreator func(b []byte) Skipper
+type RawSourceCreator func(b []byte) (Skipper, error)
 
 // SetOpResultIterator is something that handles the results of a SetExpression.
 type SetOpResultIterator func(res *SetOpResult)
@@ -213,12 +213,15 @@ type SetExpression struct {
 	Dest   []byte
 }
 
-// Each will execute the set expression, using the provided RawSourceCreator, and iterate over the result using f. 
+// Each will execute the set expression, using the provided RawSourceCreator, and iterate over the result using f.
 func (self *SetExpression) Each(r RawSourceCreator, f SetOpResultIterator) (err error) {
 	if self.Op == nil {
 		self.Op = MustParse(self.Code)
 	}
-	skipper := createSkipper(r, self.Op)
+	skipper, err := createSkipper(r, self.Op)
+	if err != nil {
+		return
+	}
 	min := self.Min
 	mininc := self.MinInc
 	count := 0
